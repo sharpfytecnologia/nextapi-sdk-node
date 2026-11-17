@@ -1,0 +1,27 @@
+# Publica no npm quando uma tag vX.Y.Z é criada neste repositório (pelo sdks/mirror.sh do monorepo).
+name: publish
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+  id-token: write # procedência (npm provenance) e, depois, trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: A tag tem de ser a versão do package.json
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - run: npm ci --no-audit --no-fund
+      # prepublishOnly roda typecheck, build e os testes antes de publicar.
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
