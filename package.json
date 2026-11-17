@@ -1,6 +1,6 @@
 {
   "name": "@sharpfy/nextapi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "SDK oficial da NextAPI (CNPJ, CEP, sócios, mercado) para Node.js, Deno, Bun e edge. Sem dependências.",
   "keywords": [
     "nextapi",

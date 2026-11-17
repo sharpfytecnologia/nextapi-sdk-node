@@ -21,7 +21,7 @@ import { LocalidadesResources, CnaesResource, EstadosResource, MunicipiosResourc
 import { MercadoResource } from './resources/mercado.js';
 import { CreditosResource } from './resources/creditos.js';
 
-export const VERSION = '0.2.0';
+export const VERSION = '0.2.1';
 const DEFAULT_BASE_URL = 'https://api.nextapi.com.br';
 const RETRYABLE = new Set([429, 502, 503, 504]);
 
