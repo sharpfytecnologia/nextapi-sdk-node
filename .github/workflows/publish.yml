@@ -7,11 +7,13 @@ on:
 
 permissions:
   contents: read
-  id-token: write # procedência (npm provenance) e, depois, trusted publishing
+  id-token: write # trusted publishing (OIDC): o npm confia neste workflow, sem chave guardada
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # O trusted publisher do npm só aceita publicação vinda deste environment.
+    environment: npm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -20,8 +22,9 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: A tag tem de ser a versão do package.json
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      # Trusted publishing exige npm 11.5.1 ou mais recente; o Node 22 traz o 10.
+      - run: npm install -g npm@11
       - run: npm ci --no-audit --no-fund
-      # prepublishOnly roda typecheck, build e os testes antes de publicar.
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # prepublishOnly roda typecheck, build e os testes antes de publicar. Sem token: a autenticação é por OIDC, e a
+      # procedência entra sozinha.
+      - run: npm publish --access public
